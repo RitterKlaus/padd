@@ -7,3 +7,18 @@ Diese App soll ein "PADD" aus Star Trek simulieren und soll dazu dienen, im Roll
 * Der Spielleitende kann sich einloggen und Handouts vorbereiten.
 * Die Spieler bekommen ein Gerät wie ein iPad mini oder einen Amazon Kindle im Kioskmodus.
 * Der Spielleitende kann nach und nach Handouts freischalten, die auf dem Gerät angezeigt werden.
+
+## Installation auf einem Webserver
+
+1. git clone
+2. cp .env.example .env
+3. Datenbankverbindung eintragen (beim Webhoster eine neue Datenbank, User und Passwort anlegen)
+3. Dabei auch `APP_ENV=production` und `APP_DEBUG=false` setzen.
+4. composer install --no-dev
+5. Falls das nicht funktioniert, Composer laut https://getcomposer.org/download/ einrichten und `php composer.phar install --no-dev`ausführen
+6. Mit `php artisan key:gen` den Key der Laravel-Anwendung generieren (wird in der .env gespeichert)
+7. Mit `php artisan migrate` die Datenbank initialisieren.
+
+## Entwicklung
+
+Details folgen noch.
