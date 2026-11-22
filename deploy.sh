@@ -50,7 +50,12 @@ SSH=(ssh -p "$DEPLOY_PORT" "$DEPLOY_HOST")
 
 # Führt ein Bash-Skript (von stdin) im Projektordner auf dem Server aus.
 remote() {
-    "${SSH[@]}" "bash -s" -- "$DEPLOY_PATH" "$DEPLOY_BRANCH" "$REMOTE_PHP" "$REMOTE_COMPOSER"
+    # ssh fügt alle Argumente zu einer Zeile zusammen, die die Remote-Shell neu
+    # aufteilt. Deshalb jedes Argument quoten, sonst wird z. B.
+    # "php composer.phar" zu zwei Argumenten.
+    local remote_args
+    remote_args="$(printf '%q ' "$DEPLOY_PATH" "$DEPLOY_BRANCH" "$REMOTE_PHP" "$REMOTE_COMPOSER")"
+    "${SSH[@]}" "bash -s -- $remote_args"
 }
 
 # ---------------------------------------------------------------------------
