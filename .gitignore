@@ -44,3 +44,5 @@ yarn-error.log
 /boost.json
 /opencode.json
 /opencode.jsonc
+public/LCARS/**
+!public/LCARS/README.md
