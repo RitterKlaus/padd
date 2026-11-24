@@ -1,11 +1,21 @@
 <?php
 
+use App\Http\Controllers\AdministrationController;
+use App\Models\Setting;
 use Illuminate\Support\Facades\Route;
+use Inertia\Inertia;
 
-Route::inertia('/', 'Welcome')->name('home');
+Route::get('/', fn () => Inertia::render('Welcome', [
+    'canRegister' => Setting::registrationEnabled(),
+]))->name('home');
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::inertia('dashboard', 'Dashboard')->name('dashboard');
+});
+
+Route::middleware(['auth', 'verified', 'can:administrate'])->group(function () {
+    Route::get('administration', [AdministrationController::class, 'edit'])->name('administration.edit');
+    Route::patch('administration', [AdministrationController::class, 'update'])->name('administration.update');
 });
 
 require __DIR__.'/settings.php';

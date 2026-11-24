@@ -32,6 +32,19 @@ class User extends Authenticatable implements MustVerifyEmail
     use HasFactory, Notifiable;
 
     /**
+     * The ID of the user who may administer the application.
+     */
+    public const ADMIN_ID = 1;
+
+    /**
+     * Determine whether the user is the administrator.
+     */
+    public function isAdmin(): bool
+    {
+        return $this->id === self::ADMIN_ID;
+    }
+
+    /**
      * Get the attributes that should be cast.
      *
      * @return array<string, string>
