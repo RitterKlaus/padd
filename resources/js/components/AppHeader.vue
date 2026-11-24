@@ -2,6 +2,7 @@
 import { Link, usePage } from '@inertiajs/vue3';
 import {
     BookOpen,
+    FileText,
     Folder,
     LayoutGrid,
     Menu,
@@ -44,6 +45,7 @@ import { getInitials } from '@/composables/useInitials';
 import { toUrl } from '@/lib/utils';
 import { dashboard } from '@/routes';
 import { edit as administration } from '@/routes/administration';
+import { index as handouts } from '@/routes/handouts';
 import type { BreadcrumbItem, NavItem } from '@/types';
 
 type Props = {
@@ -66,6 +68,11 @@ const mainNavItems = computed<NavItem[]>(() => [
         title: 'Dashboard',
         href: dashboard(),
         icon: LayoutGrid,
+    },
+    {
+        title: 'Handouts',
+        href: handouts(),
+        icon: FileText,
     },
     ...(page.props.auth.isAdmin
         ? [

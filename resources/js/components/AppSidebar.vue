@@ -1,6 +1,12 @@
 <script setup lang="ts">
 import { Link, usePage } from '@inertiajs/vue3';
-import { BookOpen, FolderGit2, LayoutGrid, Settings } from '@lucide/vue';
+import {
+    BookOpen,
+    FileText,
+    FolderGit2,
+    LayoutGrid,
+    Settings,
+} from '@lucide/vue';
 import { computed } from 'vue';
 import AppLogo from '@/components/AppLogo.vue';
 import NavFooter from '@/components/NavFooter.vue';
@@ -17,6 +23,7 @@ import {
 } from '@/components/ui/sidebar';
 import { dashboard } from '@/routes';
 import { edit as administration } from '@/routes/administration';
+import { index as handouts } from '@/routes/handouts';
 import type { NavItem } from '@/types';
 
 const page = usePage();
@@ -26,6 +33,11 @@ const mainNavItems = computed<NavItem[]>(() => [
         title: 'Dashboard',
         href: dashboard(),
         icon: LayoutGrid,
+    },
+    {
+        title: 'Handouts',
+        href: handouts(),
+        icon: FileText,
     },
     ...(page.props.auth.isAdmin
         ? [

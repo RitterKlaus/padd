@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AdministrationController;
+use App\Http\Controllers\HandoutController;
 use App\Models\Setting;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -11,6 +12,8 @@ Route::get('/', fn () => Inertia::render('Welcome', [
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::inertia('dashboard', 'Dashboard')->name('dashboard');
+
+    Route::resource('handouts', HandoutController::class)->except('show');
 });
 
 Route::middleware(['auth', 'verified', 'can:administrate'])->group(function () {
