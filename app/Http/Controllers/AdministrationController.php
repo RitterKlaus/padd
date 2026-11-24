@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\AdministrationUpdateRequest;
 use App\Models\Setting;
+use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -17,6 +18,7 @@ class AdministrationController extends Controller
     {
         return Inertia::render('Administration', [
             'registrationEnabled' => Setting::registrationEnabled(),
+            'users' => User::query()->orderBy('id')->get(['id', 'email']),
         ]);
     }
 

@@ -5,6 +5,7 @@ import Heading from '@/components/Heading.vue';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { edit, update } from '@/routes/administration';
+import type { User } from '@/types';
 
 defineOptions({
     layout: {
@@ -19,6 +20,7 @@ defineOptions({
 
 defineProps<{
     registrationEnabled: boolean;
+    users: Pick<User, 'id' | 'email'>[];
 }>();
 
 const processing = ref(false);
@@ -65,6 +67,30 @@ const updateRegistration = (enabled: boolean) => {
                 :disabled="processing"
                 @update:model-value="updateRegistration"
             />
+        </div>
+
+        <div class="mt-6 max-w-xl overflow-x-auto rounded-lg border">
+            <table class="w-full text-left text-sm">
+                <caption class="sr-only">
+                    Registered users
+                </caption>
+                <thead class="border-b bg-muted/50 text-muted-foreground">
+                    <tr>
+                        <th scope="col" class="px-4 py-2 font-medium">
+                            User ID
+                        </th>
+                        <th scope="col" class="px-4 py-2 font-medium">
+                            Email address
+                        </th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y">
+                    <tr v-for="user in users" :key="user.id">
+                        <td class="px-4 py-2">{{ user.id }}</td>
+                        <td class="px-4 py-2">{{ user.email }}</td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
     </div>
 </template>

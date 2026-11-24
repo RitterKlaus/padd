@@ -18,6 +18,18 @@ test('the admin can visit the administration page', function () {
             ->where('registrationEnabled', true));
 });
 
+test('the administration page lists all users with only their id and email address', function () {
+    $user = User::factory()->create(['id' => 2]);
+    $admin = User::factory()->create(['id' => User::ADMIN_ID]);
+
+    $this->actingAs($admin)
+        ->get(route('administration.edit'))
+        ->assertInertia(fn (Assert $page) => $page->where('users', [
+            ['id' => $admin->id, 'email' => $admin->email],
+            ['id' => $user->id, 'email' => $user->email],
+        ]));
+});
+
 test('other users have no access to the administration', function () {
     $this->actingAs(User::factory()->create(['id' => 2]));
 
