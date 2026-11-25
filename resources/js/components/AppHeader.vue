@@ -42,8 +42,8 @@ import {
 import UserMenuContent from '@/components/UserMenuContent.vue';
 import { useCurrentUrl } from '@/composables/useCurrentUrl';
 import { getInitials } from '@/composables/useInitials';
-import { toUrl } from '@/lib/utils';
-import { dashboard } from '@/routes';
+import { isExternalUrl, toUrl } from '@/lib/utils';
+import { dashboard, documentation } from '@/routes';
 import { edit as administration } from '@/routes/administration';
 import { index as handouts } from '@/routes/handouts';
 import type { BreadcrumbItem, NavItem } from '@/types';
@@ -88,12 +88,12 @@ const mainNavItems = computed<NavItem[]>(() => [
 const rightNavItems: NavItem[] = [
     {
         title: 'Repository',
-        href: 'https://github.com/laravel/vue-starter-kit',
+        href: 'https://github.com/RitterKlaus/padd',
         icon: Folder,
     },
     {
         title: 'Documentation',
-        href: 'https://laravel.com/docs/starter-kits#vue',
+        href: documentation(),
         icon: BookOpen,
     },
 ];
@@ -149,12 +149,25 @@ const rightNavItems: NavItem[] = [
                                     </Link>
                                 </nav>
                                 <div class="flex flex-col space-y-4">
-                                    <a
+                                    <component
+                                        :is="
+                                            isExternalUrl(item.href)
+                                                ? 'a'
+                                                : Link
+                                        "
                                         v-for="item in rightNavItems"
                                         :key="item.title"
                                         :href="toUrl(item.href)"
-                                        target="_blank"
-                                        rel="noopener noreferrer"
+                                        :target="
+                                            isExternalUrl(item.href)
+                                                ? '_blank'
+                                                : undefined
+                                        "
+                                        :rel="
+                                            isExternalUrl(item.href)
+                                                ? 'noopener noreferrer'
+                                                : undefined
+                                        "
                                         class="flex items-center space-x-2 text-sm font-medium"
                                     >
                                         <component
@@ -163,7 +176,7 @@ const rightNavItems: NavItem[] = [
                                             class="h-5 w-5"
                                         />
                                         <span>{{ item.title }}</span>
-                                    </a>
+                                    </component>
                                 </div>
                             </div>
                         </SheetContent>
@@ -238,10 +251,23 @@ const rightNavItems: NavItem[] = [
                                                 as-child
                                                 class="group h-9 w-9 cursor-pointer"
                                             >
-                                                <a
+                                                <component
+                                                    :is="
+                                                        isExternalUrl(item.href)
+                                                            ? 'a'
+                                                            : Link
+                                                    "
                                                     :href="toUrl(item.href)"
-                                                    target="_blank"
-                                                    rel="noopener noreferrer"
+                                                    :target="
+                                                        isExternalUrl(item.href)
+                                                            ? '_blank'
+                                                            : undefined
+                                                    "
+                                                    :rel="
+                                                        isExternalUrl(item.href)
+                                                            ? 'noopener noreferrer'
+                                                            : undefined
+                                                    "
                                                 >
                                                     <span class="sr-only">{{
                                                         item.title
@@ -250,7 +276,7 @@ const rightNavItems: NavItem[] = [
                                                         :is="item.icon"
                                                         class="size-5 opacity-80 group-hover:opacity-100"
                                                     />
-                                                </a>
+                                                </component>
                                             </Button>
                                         </TooltipTrigger>
                                         <TooltipContent>

@@ -12,6 +12,7 @@ Route::get('/', fn () => Inertia::render('Welcome', [
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::inertia('dashboard', 'Dashboard')->name('dashboard');
+    Route::inertia('documentation', 'Documentation')->name('documentation');
 
     Route::resource('handouts', HandoutController::class)->except('show');
 });

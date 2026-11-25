@@ -21,7 +21,7 @@ import {
     SidebarMenuButton,
     SidebarMenuItem,
 } from '@/components/ui/sidebar';
-import { dashboard } from '@/routes';
+import { dashboard, documentation } from '@/routes';
 import { edit as administration } from '@/routes/administration';
 import { index as handouts } from '@/routes/handouts';
 import type { NavItem } from '@/types';
@@ -53,12 +53,12 @@ const mainNavItems = computed<NavItem[]>(() => [
 const footerNavItems: NavItem[] = [
     {
         title: 'Repository',
-        href: 'https://github.com/laravel/vue-starter-kit',
+        href: 'https://github.com/RitterKlaus/padd',
         icon: FolderGit2,
     },
     {
         title: 'Documentation',
-        href: 'https://laravel.com/docs/starter-kits#vue',
+        href: documentation(),
         icon: BookOpen,
     },
 ];
