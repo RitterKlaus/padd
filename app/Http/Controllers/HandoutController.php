@@ -18,7 +18,7 @@ class HandoutController extends Controller
     public function index(Request $request): Response
     {
         return Inertia::render('handouts/Index', [
-            'handouts' => $request->user()->handouts()->latest('id')->get(['id', 'title']),
+            'handouts' => $request->user()->handouts()->latest('id')->get(['id', 'title', 'is_active']),
         ]);
     }
 

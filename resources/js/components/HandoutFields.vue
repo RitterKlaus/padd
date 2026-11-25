@@ -6,7 +6,7 @@ import { Textarea } from '@/components/ui/textarea';
 import type { Handout } from '@/types';
 
 defineProps<{
-    handout?: Handout;
+    handout?: Pick<Handout, 'title' | 'body'>;
     errors: Partial<Record<string, string>>;
 }>();
 </script>

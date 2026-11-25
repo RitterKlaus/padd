@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { Head, Link } from '@inertiajs/vue3';
 import Heading from '@/components/Heading.vue';
-import { documentation } from '@/routes';
+import { dashboard, documentation } from '@/routes';
 import { edit as appearance } from '@/routes/appearance';
 import { index as handouts } from '@/routes/handouts';
 import { edit as profile } from '@/routes/profile';
@@ -22,6 +22,7 @@ const sections = [
     { id: 'about', title: 'What is PADD?' },
     { id: 'account', title: 'Your account' },
     { id: 'handouts', title: 'Handouts' },
+    { id: 'padd', title: 'PADD' },
     { id: 'settings', title: 'Settings' },
     { id: 'troubleshooting', title: 'Troubleshooting' },
 ];
@@ -59,9 +60,8 @@ const sections = [
                     who want to prepare handouts for their players.
                 </p>
                 <p>
-                    You can currently write and manage your handouts. Releasing
-                    them step by step to a device for your players is planned,
-                    but not available yet.
+                    Write your handouts in advance and show them one after the
+                    other on the devices of your players.
                 </p>
             </section>
 
@@ -92,7 +92,9 @@ const sections = [
                 <p>
                     Open <Link :href="handouts()">Handouts</Link> in the menu to
                     see all your handouts, newest first. Other users, including
-                    the administrator, cannot see them in the app.
+                    the administrator, including the administrator, cannot see
+                    them in the app. The handout shown on the PADD is visible to
+                    everyone who knows your PADD link.
                 </p>
                 <h3>Create a handout</h3>
                 <ol>
@@ -112,6 +114,34 @@ const sections = [
                 <p>
                     Select the trash icon and confirm. A deleted handout cannot
                     be restored.
+                </p>
+            </section>
+
+            <section id="padd">
+                <h2 class="text-lg font-semibold">PADD</h2>
+                <p>
+                    The PADD shows one of your handouts in the LCARS design,
+                    without any menus of this app.
+                </p>
+                <ol>
+                    <li>
+                        Open the <Link :href="dashboard()">Dashboard</Link> and
+                        select "Start PADD" to open it in a new tab.
+                    </li>
+                    <li>
+                        To use the devices of your players, copy the link below
+                        the button and open it there. No login is required, so
+                        share it only with your players.
+                    </li>
+                    <li>
+                        Select the eye icon next to a handout to show it. It
+                        replaces the previous one within a few seconds. Select
+                        the icon again to hide the handout.
+                    </li>
+                </ol>
+                <p>
+                    If no handout is shown, the PADD displays "Standby". Changes
+                    to the shown handout appear automatically as well.
                 </p>
             </section>
 

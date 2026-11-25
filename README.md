@@ -18,6 +18,7 @@ Diese App soll ein "PADD" aus Star Trek simulieren und soll dazu dienen, im Roll
 6. Falls das nicht funktioniert, Composer laut https://getcomposer.org/download/ einrichten und `php composer.phar install --no-dev`ausführen
 7. Mit `php artisan key:gen` den Key der Laravel-Anwendung generieren (wird in der .env gespeichert)
 8. Mit `php artisan migrate` die Datenbank initialisieren.
+9. Die LCARS-Dateien in `public/LCARS` kopieren, siehe [public/LCARS/README.md](public/LCARS/README.md).
 
 ## Entwicklung
 

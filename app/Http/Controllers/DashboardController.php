@@ -15,6 +15,7 @@ class DashboardController extends Controller
     {
         return Inertia::render('Dashboard', [
             'handoutCount' => $request->user()->handouts()->count(),
+            'paddUrl' => route('padd.show', $request->user()->padd_token),
         ]);
     }
 }

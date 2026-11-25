@@ -16,7 +16,7 @@ test('users only see their own handouts', function () {
         ->get(route('handouts.index'))
         ->assertInertia(fn (Assert $page) => $page
             ->component('handouts/Index')
-            ->where('handouts', [['id' => $handout->id, 'title' => $handout->title]]));
+            ->where('handouts', [['id' => $handout->id, 'title' => $handout->title, 'is_active' => false]]));
 });
 
 test('users can open the form for a new handout', function () {

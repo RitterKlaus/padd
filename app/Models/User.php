@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Str;
 
 /**
  * @property int $id
@@ -21,12 +22,13 @@ use Illuminate\Support\Carbon;
  * @property string|null $two_factor_secret
  * @property string|null $two_factor_recovery_codes
  * @property Carbon|null $two_factor_confirmed_at
+ * @property string|null $padd_token
  * @property string|null $remember_token
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  */
 #[Fillable(['name', 'email', 'password'])]
-#[Hidden(['password', 'two_factor_secret', 'two_factor_recovery_codes', 'remember_token'])]
+#[Hidden(['password', 'two_factor_secret', 'two_factor_recovery_codes', 'padd_token', 'remember_token'])]
 class User extends Authenticatable implements MustVerifyEmail
 {
     /** @use HasFactory<UserFactory> */
@@ -36,6 +38,24 @@ class User extends Authenticatable implements MustVerifyEmail
      * The ID of the user who may administer the application.
      */
     public const ADMIN_ID = 1;
+
+    /**
+     * Give every new user a secret token for the PADD link.
+     */
+    protected static function booted(): void
+    {
+        static::creating(function (User $user): void {
+            $user->padd_token ??= Str::random(40);
+        });
+    }
+
+    /**
+     * Get the handout currently shown on the PADD.
+     */
+    public function activeHandout(): ?Handout
+    {
+        return $this->handouts()->where('is_active', true)->first();
+    }
 
     /**
      * Determine whether the user is the administrator.

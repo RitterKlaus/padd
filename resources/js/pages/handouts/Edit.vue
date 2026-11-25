@@ -16,7 +16,7 @@ defineOptions({
 });
 
 defineProps<{
-    handout: Handout;
+    handout: Pick<Handout, 'id' | 'title' | 'body'>;
 }>();
 </script>
 

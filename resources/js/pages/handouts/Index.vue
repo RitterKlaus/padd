@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { Form, Head, Link } from '@inertiajs/vue3';
-import { Pencil, Plus, Trash2 } from '@lucide/vue';
+import { Eye, EyeOff, Pencil, Plus, Trash2 } from '@lucide/vue';
 import Heading from '@/components/Heading.vue';
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
     Dialog,
@@ -14,6 +15,10 @@ import {
     DialogTrigger,
 } from '@/components/ui/dialog';
 import { create, destroy, edit, index } from '@/routes/handouts';
+import {
+    destroy as deactivate,
+    update as activate,
+} from '@/routes/handouts/activation';
 import type { Handout } from '@/types';
 
 defineOptions({
@@ -28,7 +33,7 @@ defineOptions({
 });
 
 defineProps<{
-    handouts: Pick<Handout, 'id' | 'title'>[];
+    handouts: Pick<Handout, 'id' | 'title' | 'is_active'>[];
 }>();
 </script>
 
@@ -62,7 +67,37 @@ defineProps<{
                     {{ handout.title }}
                 </Link>
 
-                <div class="flex shrink-0 gap-1">
+                <div class="flex shrink-0 items-center gap-1">
+                    <Badge v-if="handout.is_active">On PADD</Badge>
+                    <Form
+                        v-bind="
+                            handout.is_active
+                                ? deactivate.form(handout.id)
+                                : activate.form(handout.id)
+                        "
+                        :options="{ preserveScroll: true }"
+                        v-slot="{ processing }"
+                    >
+                        <Button
+                            type="submit"
+                            variant="ghost"
+                            size="icon"
+                            :disabled="processing"
+                            :title="
+                                handout.is_active
+                                    ? 'Hide from PADD'
+                                    : 'Show on PADD'
+                            "
+                            :aria-label="
+                                handout.is_active
+                                    ? `Hide ${handout.title} from PADD`
+                                    : `Show ${handout.title} on PADD`
+                            "
+                        >
+                            <EyeOff v-if="handout.is_active" />
+                            <Eye v-else />
+                        </Button>
+                    </Form>
                     <Button variant="ghost" size="icon" as-child>
                         <Link
                             :href="edit(handout.id)"
