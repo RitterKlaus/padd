@@ -133,9 +133,9 @@ const sections = [
                         select "Start PADD" to open it in a new tab.
                     </li>
                     <li>
-                        To use the devices of your players, copy the link below
-                        the button and open it there. No login is required, so
-                        share it only with your players.
+                        To use the devices of your players, scan the QR code
+                        below the button or copy the link and open it there. No
+                        login is required, so share it only with your players.
                     </li>
                     <li>
                         Select the eye icon next to a handout to show it. It

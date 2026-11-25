@@ -22,6 +22,7 @@ defineOptions({
 defineProps<{
     handoutCount: number;
     paddUrl: string;
+    paddQrCode: string;
 }>();
 
 const { copy, copied } = useClipboard({ legacy: true });
@@ -70,6 +71,13 @@ const { copy, copied } = useClipboard({ legacy: true });
                 The link works without login. Anyone who knows it can see the
                 handout shown on the PADD.
             </p>
+            <img
+                :src="paddQrCode"
+                alt="QR code with the link for player devices"
+                width="256"
+                height="256"
+                class="rounded-lg border bg-white"
+            />
         </div>
     </div>
 </template>

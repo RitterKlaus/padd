@@ -3,6 +3,7 @@
 use App\Enums\LcarsTheme;
 use App\Models\Handout;
 use App\Models\User;
+use App\Services\QrCodeGenerator;
 use Illuminate\Support\Facades\File;
 use Inertia\Testing\AssertableInertia as Assert;
 
@@ -125,6 +126,7 @@ test('the dashboard links to the PADD without exposing the token in the user dat
         ->get(route('dashboard'))
         ->assertInertia(fn (Assert $page) => $page
             ->where('paddUrl', route('padd.show', $user->padd_token))
+            ->where('paddQrCode', app(QrCodeGenerator::class)->dataUri(route('padd.show', $user->padd_token)))
             ->missing('auth.user.padd_token'));
 });
 
