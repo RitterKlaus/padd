@@ -41,12 +41,16 @@ class User extends Authenticatable implements MustVerifyEmail
     public const ADMIN_ID = 1;
 
     /**
-     * Give every new user a secret token for the PADD link.
+     * Give every new user a secret PADD token and delete the images of deleted users.
      */
     protected static function booted(): void
     {
         static::creating(function (User $user): void {
             $user->padd_token ??= Str::random(40);
+        });
+
+        static::deleted(function (User $user): void {
+            Handout::deleteImagesOf($user);
         });
     }
 

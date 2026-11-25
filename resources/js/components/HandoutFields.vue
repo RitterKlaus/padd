@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { List, Minus } from '@lucide/vue';
-import { nextTick, ref } from 'vue';
+import { ImageIcon, List, Minus, Trash2, Undo2 } from '@lucide/vue';
+import { computed, nextTick, ref } from 'vue';
 import InputError from '@/components/InputError.vue';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -19,6 +19,7 @@ const props = defineProps<{
     handout?: Pick<Handout, 'title' | 'body'>;
     theme: string;
     themes: ThemeOption[];
+    imageUrl?: string | null;
     errors: Partial<Record<string, string>>;
 }>();
 
@@ -26,6 +27,26 @@ const selectedTheme = ref(props.theme);
 
 const MAX_BODY_LENGTH = 3000;
 const body = ref(props.handout?.body ?? '');
+
+const MAX_IMAGE_SIZE = 2 * 1024 * 1024;
+const imageSelected = ref(false);
+const imageRemoved = ref(false);
+const imageTooLarge = ref(false);
+const hasImage = computed(
+    () => imageSelected.value || (!!props.imageUrl && !imageRemoved.value),
+);
+
+const onImageChange = (event: Event) => {
+    const input = event.target as HTMLInputElement;
+
+    imageTooLarge.value = (input.files?.[0]?.size ?? 0) > MAX_IMAGE_SIZE;
+
+    if (imageTooLarge.value) {
+        input.value = '';
+    }
+
+    imageSelected.value = !!input.files?.length;
+};
 
 const textarea = () =>
     document.getElementById('body') as HTMLTextAreaElement | null;
@@ -81,7 +102,7 @@ const insertList = () => {
     void replaceText(start, end, replacement, lines.length > 1);
 };
 
-const insertBar = () => {
+const insertLine = (line: string) => {
     const element = textarea();
 
     if (!element) {
@@ -94,7 +115,7 @@ const insertBar = () => {
     const prefix = before === '' || before.endsWith('\n') ? '' : '\n';
     const suffix = after.startsWith('\n') ? '' : '\n';
 
-    void replaceText(selectionEnd, selectionEnd, `${prefix}----${suffix}`);
+    void replaceText(selectionEnd, selectionEnd, `${prefix}${line}${suffix}`);
 };
 </script>
 
@@ -147,9 +168,18 @@ const insertBar = () => {
                     type="button"
                     variant="outline"
                     size="sm"
-                    @click="insertBar"
+                    @click="insertLine('----')"
                 >
                     <Minus /> LCARS bar
+                </Button>
+                <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    :disabled="!hasImage"
+                    @click="insertLine('[image]')"
+                >
+                    <ImageIcon /> Image
                 </Button>
             </div>
             <Textarea
@@ -163,9 +193,64 @@ const insertBar = () => {
             />
             <p id="body-hint" class="text-sm text-muted-foreground">
                 Maximum 3000 characters. Start a line with "- " for a list item.
-                A line with "----" becomes an LCARS bar.
+                A line with "----" becomes an LCARS bar. "[image]" places the
+                image, otherwise it is shown below the text.
             </p>
             <InputError :message="errors.body" />
+        </div>
+
+        <div class="grid gap-2">
+            <Label for="image">Image</Label>
+            <template v-if="imageUrl">
+                <input
+                    type="hidden"
+                    name="remove_image"
+                    :value="imageRemoved ? 1 : 0"
+                />
+                <img
+                    v-if="!imageRemoved"
+                    :src="imageUrl"
+                    alt="Current image of this handout"
+                    class="max-h-48 max-w-full justify-self-start rounded-lg border"
+                />
+                <p v-else class="text-sm text-muted-foreground">
+                    The image will be deleted when you save.
+                </p>
+                <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    class="justify-self-start"
+                    @click="imageRemoved = !imageRemoved"
+                >
+                    <template v-if="imageRemoved">
+                        <Undo2 /> Keep image
+                    </template>
+                    <template v-else><Trash2 /> Delete image</template>
+                </Button>
+            </template>
+            <input
+                id="image"
+                name="image"
+                type="file"
+                accept="image/jpeg,image/png,image/webp"
+                aria-describedby="image-hint"
+                class="w-full rounded-md border border-input px-3 py-2 text-sm file:mr-3 file:font-medium"
+                @change="onImageChange"
+            />
+            <p id="image-hint" class="text-sm text-muted-foreground">
+                JPG, PNG or WebP, maximum 2 MB.
+                <template v-if="imageUrl">
+                    A new image replaces the current one.
+                </template>
+            </p>
+            <InputError
+                :message="
+                    imageTooLarge
+                        ? 'The image must not be larger than 2 MB.'
+                        : errors.image
+                "
+            />
         </div>
     </div>
 </template>

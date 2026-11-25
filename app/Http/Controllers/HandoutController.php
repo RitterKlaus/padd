@@ -39,7 +39,9 @@ class HandoutController extends Controller
      */
     public function store(HandoutRequest $request): RedirectResponse
     {
-        $request->user()->handouts()->create($request->validated());
+        $handout = $request->user()->handouts()->create($request->safe()->only(['title', 'body', 'theme']));
+
+        $this->saveImage($request, $handout);
 
         Inertia::flash('toast', ['type' => 'success', 'message' => __('Handout created.')]);
 
@@ -55,6 +57,9 @@ class HandoutController extends Controller
 
         return Inertia::render('handouts/Edit', [
             'handout' => $handout->only(['id', 'title', 'body', 'theme']),
+            'imageUrl' => $handout->image_path === null
+                ? null
+                : route('handouts.image', ['handout' => $handout, 'v' => $handout->imageVersion()], absolute: false),
             'themes' => LcarsTheme::options(),
         ]);
     }
@@ -66,7 +71,9 @@ class HandoutController extends Controller
     {
         Gate::authorize('update', $handout);
 
-        $handout->update($request->validated());
+        $handout->update($request->safe()->only(['title', 'body', 'theme']));
+
+        $this->saveImage($request, $handout);
 
         Inertia::flash('toast', ['type' => 'success', 'message' => __('Handout updated.')]);
 
@@ -85,5 +92,19 @@ class HandoutController extends Controller
         Inertia::flash('toast', ['type' => 'success', 'message' => __('Handout deleted.')]);
 
         return to_route('handouts.index');
+    }
+
+    /**
+     * Replace or remove the image as requested.
+     */
+    private function saveImage(HandoutRequest $request, Handout $handout): void
+    {
+        $image = $request->file('image');
+
+        if ($image !== null) {
+            $handout->replaceImage($image);
+        } elseif ($request->boolean('remove_image')) {
+            $handout->removeImage();
+        }
     }
 }

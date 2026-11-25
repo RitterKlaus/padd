@@ -131,6 +131,14 @@ const sections = [
                     class="overflow-x-auto rounded-lg border p-4"
                     v-text="example"
                 ></pre>
+                <h3>Add an image</h3>
+                <p>
+                    Each handout can have one image (JPG, PNG or WebP, up to 2
+                    MB). It is shown below the text. To place it elsewhere,
+                    select the "Image" button above the text field. It inserts
+                    the tag [image] at the cursor. To remove the image, edit the
+                    handout, select "Delete image" and save.
+                </p>
                 <h3>Edit a handout</h3>
                 <p>
                     Select the title or the pencil icon, make your changes and

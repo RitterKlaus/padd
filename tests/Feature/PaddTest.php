@@ -105,15 +105,18 @@ test('the version changes whenever the displayed content changes', function () {
     $versions[] = $version();
     $handout->update(['body' => 'New text']);
     $versions[] = $version();
+    $handout->image_path = 'handouts/image.png';
+    $handout->save();
+    $versions[] = $version();
     $handout->update(['theme' => LcarsTheme::Voyager]);
     $versions[] = $version();
     $other->activate();
     $versions[] = $version();
 
-    expect(array_unique($versions))->toHaveCount(5)
-        ->and($version())->toBe($versions[4]);
+    expect(array_unique($versions))->toHaveCount(6)
+        ->and($version())->toBe($versions[5]);
 
-    $this->get(route('padd.show', $handout->user->padd_token))->assertSee($versions[4]);
+    $this->get(route('padd.show', $handout->user->padd_token))->assertSee($versions[5]);
 });
 
 test('the dashboard links to the PADD without exposing the token in the user data', function () {
@@ -156,4 +159,16 @@ test('lists and bars are shown on the PADD', function () {
     $this->get(route('padd.show', $handout->user->padd_token))
         ->assertOk()
         ->assertSee("<p>Text</p>\n<ul class=\"lcars-list\">\n<li>Item</li>\n</ul>\n<hr class=\"lcars-bar\">", false);
+});
+
+test('the image is placed at its tag', function () {
+    $handout = Handout::factory()->create(['title' => 'A "quoted" title', 'body' => "Before\n[image]\nAfter", 'is_active' => true]);
+    $handout->image_path = 'handouts/image.png';
+    $handout->save();
+    $url = route('padd.image', ['user' => $handout->user->padd_token, 'v' => $handout->imageVersion()], absolute: false);
+
+    $this->get(route('padd.show', $handout->user->padd_token))
+        ->assertOk()
+        ->assertSeeInOrder(['<p>Before</p>', 'src="'.$url.'" alt="A &quot;quoted&quot; title"', '<p>After</p>'], false)
+        ->assertDontSee('[image]');
 });

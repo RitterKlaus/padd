@@ -20,3 +20,14 @@ test('handout text is converted to html', function (string $body, string $html) 
     'multibyte characters' => ["Ångström\n- Å", "<p>Ångström</p>\n<ul class=\"lcars-list\">\n<li>Å</li>\n</ul>"],
     'escaping' => ["<b>One</b>\n- <img src=x>", "<p>&lt;b&gt;One&lt;/b&gt;</p>\n<ul class=\"lcars-list\">\n<li>&lt;img src=x&gt;</li>\n</ul>"],
 ]);
+
+test('the image is placed in the text', function (string $body, ?string $image, string $html) {
+    expect((new HandoutFormatter)->toHtml($body, $image))->toBe($html);
+})->with([
+    'below the text' => ['One', '<img>', "<p>One</p>\n<img>"],
+    'own line' => ["One\n[image]\nTwo", '<img>', "<p>One</p>\n<img>\n<p>Two</p>"],
+    'within a line' => ['One [IMAGE] two', '<img>', "<p>One</p>\n<img>\n<p>two</p>"],
+    'between list items' => ["- One\n[image]\n- Two", '<img>', "<ul class=\"lcars-list\">\n<li>One</li>\n</ul>\n<img>\n<ul class=\"lcars-list\">\n<li>Two</li>\n</ul>"],
+    'only once' => ["[image]\nOne\n[image]", '<img>', "<img>\n<p>One</p>"],
+    'tag without image' => ["One\n[image]\nTwo", null, "<p>One</p>\n<p>Two</p>"],
+]);

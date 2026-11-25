@@ -17,6 +17,7 @@ defineOptions({
 
 defineProps<{
     handout: Pick<Handout, 'id' | 'title' | 'body' | 'theme'>;
+    imageUrl: string | null;
     themes: ThemeOption[];
 }>();
 </script>
@@ -27,7 +28,7 @@ defineProps<{
     <div class="px-4 py-6">
         <Heading
             title="Edit handout"
-            description="Change the title, design and text of this handout"
+            description="Change the title, design, text and image of this handout"
         />
 
         <Form
@@ -37,6 +38,7 @@ defineProps<{
         >
             <HandoutFields
                 :handout="handout"
+                :image-url="imageUrl"
                 :theme="handout.theme"
                 :themes="themes"
                 :errors="errors"

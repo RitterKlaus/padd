@@ -19,6 +19,8 @@ class HandoutRequest extends FormRequest
         return [
             'title' => ['required', 'string', 'max:300'],
             'body' => ['required', 'string', 'max:3000'],
+            'image' => ['nullable', 'file', 'mimes:jpg,png,webp', 'max:2048'],
+            'remove_image' => ['nullable', 'boolean'],
             'theme' => ['required', Rule::enum(LcarsTheme::class)],
         ];
     }
