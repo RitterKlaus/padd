@@ -1,8 +1,6 @@
 @if ($handout)
 <h1>{{ $handout->title }}</h1>
-@foreach (preg_split('/\R{2,}/', trim($handout->body)) as $paragraph)
-<p>{!! nl2br(e($paragraph)) !!}</p>
-@endforeach
+{!! $body !!}
 @else
 <h1>Standby</h1>
 <p>No data available.</p>

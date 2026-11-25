@@ -149,3 +149,11 @@ test('standby uses the design of the handout created last', function () {
         ->assertSee('Design voyager')
         ->assertSee('Standby');
 });
+
+test('lists and bars are shown on the PADD', function () {
+    $handout = Handout::factory()->create(['body' => "Text\n- Item\n----", 'is_active' => true]);
+
+    $this->get(route('padd.show', $handout->user->padd_token))
+        ->assertOk()
+        ->assertSee("<p>Text</p>\n<ul class=\"lcars-list\">\n<li>Item</li>\n</ul>\n<hr class=\"lcars-bar\">", false);
+});

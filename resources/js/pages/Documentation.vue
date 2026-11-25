@@ -18,6 +18,9 @@ defineOptions({
     },
 });
 
+const example =
+    'Crew on duty:\n- Captain\n- First officer\n----\nEnd of transmission';
+
 const sections = [
     { id: 'about', title: 'What is PADD?' },
     { id: 'account', title: 'Your account' },
@@ -109,6 +112,25 @@ const sections = [
                     </li>
                     <li>Select "Save".</li>
                 </ol>
+                <h3>Format the text</h3>
+                <ul>
+                    <li>Leave a line empty to start a new paragraph.</li>
+                    <li>
+                        Start a line with a dash and a space for a list item.
+                    </li>
+                    <li>
+                        Write four dashes on a line of their own for an LCARS
+                        bar.
+                    </li>
+                </ul>
+                <p>
+                    The buttons above the text field insert the dashes for you.
+                    Example:
+                </p>
+                <pre
+                    class="overflow-x-auto rounded-lg border p-4"
+                    v-text="example"
+                ></pre>
                 <h3>Edit a handout</h3>
                 <p>
                     Select the title or the pencil icon, make your changes and

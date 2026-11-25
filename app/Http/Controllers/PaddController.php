@@ -6,6 +6,7 @@ use App\Enums\LcarsTheme;
 use App\Exceptions\LcarsTemplateException;
 use App\Models\Handout;
 use App\Models\User;
+use App\Services\HandoutFormatter;
 use App\Services\LcarsRenderer;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
@@ -21,7 +22,7 @@ class PaddController extends Controller
     /**
      * Show the user's active handout in the LCARS design.
      */
-    public function show(User $user, LcarsRenderer $renderer): Response
+    public function show(User $user, LcarsRenderer $renderer, HandoutFormatter $formatter): Response
     {
         $handout = $user->activeHandout();
         $theme = $handout->theme ?? $user->latestTheme();
@@ -30,7 +31,10 @@ class PaddController extends Controller
             $html = $renderer->render(
                 $theme,
                 $handout->title ?? 'PADD',
-                view('padd.content', ['handout' => $handout])->render(),
+                view('padd.content', [
+                    'handout' => $handout,
+                    'body' => $formatter->toHtml($handout->body ?? ''),
+                ])->render(),
                 view('padd.poll', [
                     'versionUrl' => route('padd.version', $user->padd_token, absolute: false),
                     'version' => $this->versionOf($handout, $theme),
