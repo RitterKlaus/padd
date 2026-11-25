@@ -16,15 +16,20 @@ use Illuminate\Support\Facades\DB;
  * @property int $user_id
  * @property string $title
  * @property string $body
+ * @property LcarsTheme $theme
  * @property bool $is_active
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  */
-#[Fillable(['title', 'body'])]
+#[Fillable(['title', 'body', 'theme'])]
 class Handout extends Model
 {
     /** @use HasFactory<HandoutFactory> */
     use HasFactory;
+
+    protected $attributes = [
+        'theme' => LcarsTheme::Classic->value,
+    ];
 
     /**
      * Get the user who owns the handout.
@@ -61,14 +66,6 @@ class Handout extends Model
     }
 
     /**
-     * Get the design in which the handout is displayed.
-     */
-    public function theme(): LcarsTheme
-    {
-        return LcarsTheme::Classic;
-    }
-
-    /**
      * Get the attributes that should be cast.
      *
      * @return array<string, string>
@@ -76,6 +73,7 @@ class Handout extends Model
     protected function casts(): array
     {
         return [
+            'theme' => LcarsTheme::class,
             'is_active' => 'boolean',
         ];
     }

@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\LcarsTheme;
 use App\Models\Handout;
 use App\Models\User;
 use Inertia\Testing\AssertableInertia as Assert;
@@ -22,12 +23,27 @@ test('users only see their own handouts', function () {
 test('users can open the form for a new handout', function () {
     $this->actingAs(User::factory()->create())
         ->get(route('handouts.create'))
-        ->assertInertia(fn (Assert $page) => $page->component('handouts/Create'));
+        ->assertInertia(fn (Assert $page) => $page->component('handouts/Create')
+            ->where('defaultTheme', 'classic')
+            ->has('themes', 6)
+            ->where('themes.0', ['value' => 'classic', 'label' => 'Classic']));
+});
+
+test('the design of the own handout created last is preselected', function () {
+    $user = User::factory()->create();
+    $first = Handout::factory()->for($user)->create(['theme' => LcarsTheme::Voyager]);
+    Handout::factory()->for($user)->create(['theme' => LcarsTheme::Picard]);
+    Handout::factory()->create(['theme' => LcarsTheme::LowerDecks]);
+    $first->update(['title' => 'Edited later']);
+
+    $this->actingAs($user)
+        ->get(route('handouts.create'))
+        ->assertInertia(fn (Assert $page) => $page->where('defaultTheme', 'picard'));
 });
 
 test('users can create a handout with the maximum lengths', function () {
     $user = User::factory()->create();
-    $data = ['title' => str_repeat('ä', 300), 'body' => str_repeat('ä', 3000)];
+    $data = ['title' => str_repeat('ä', 300), 'body' => str_repeat('ä', 3000), 'theme' => 'voyager'];
 
     $this->actingAs($user)
         ->post(route('handouts.store'), $data)
@@ -44,14 +60,15 @@ test('users can edit their own handout', function () {
         ->get(route('handouts.edit', $handout))
         ->assertInertia(fn (Assert $page) => $page
             ->component('handouts/Edit')
-            ->where('handout', $handout->only(['id', 'title', 'body'])));
+            ->where('handout', [...$handout->only(['id', 'title', 'body']), 'theme' => 'classic'])
+            ->has('themes', 6));
 
-    $this->patch(route('handouts.update', $handout), ['title' => 'New title', 'body' => 'New text'])
+    $this->patch(route('handouts.update', $handout), ['title' => 'New title', 'body' => 'New text', 'theme' => 'picard'])
         ->assertSessionHasNoErrors()
         ->assertRedirect(route('handouts.index'));
 
-    expect($handout->refresh()->only(['title', 'body']))
-        ->toBe(['title' => 'New title', 'body' => 'New text']);
+    expect($handout->refresh()->only(['title', 'body', 'theme']))
+        ->toBe(['title' => 'New title', 'body' => 'New text', 'theme' => LcarsTheme::Picard]);
 });
 
 test('users can delete their own handout', function () {
@@ -70,7 +87,7 @@ test('other users, including the admin, cannot access a handout', function (int 
     $this->actingAs(User::factory()->create(['id' => $userId]));
 
     $this->get(route('handouts.edit', $handout))->assertNotFound();
-    $this->patch(route('handouts.update', $handout), ['title' => 'New title', 'body' => 'New text'])->assertNotFound();
+    $this->patch(route('handouts.update', $handout), ['title' => 'New title', 'body' => 'New text', 'theme' => 'classic'])->assertNotFound();
     $this->delete(route('handouts.destroy', $handout))->assertNotFound();
 
     $this->assertDatabaseHas('handouts', $handout->only(['id', 'user_id', 'title', 'body']));
@@ -80,7 +97,7 @@ test('invalid handouts are rejected', function (array $override, string $field, 
     app()->setLocale('en');
 
     $handout = Handout::factory()->create();
-    $data = ['title' => 'New title', 'body' => 'New text', ...$override];
+    $data = ['title' => 'New title', 'body' => 'New text', 'theme' => 'classic', ...$override];
 
     $this->actingAs($handout->user);
 
@@ -93,6 +110,8 @@ test('invalid handouts are rejected', function (array $override, string $field, 
     'missing title' => [['title' => ''], 'title', 'The title field is required.'],
     'long title' => [['title' => str_repeat('a', 301)], 'title', 'The title field must not be greater than 300 characters.'],
     'missing body' => [['body' => ''], 'body', 'The body field is required.'],
+    'missing design' => [['theme' => ''], 'theme', 'The theme field is required.'],
+    'unknown design' => [['theme' => '../classic'], 'theme', 'The selected theme is invalid.'],
     'long body' => [['body' => str_repeat('a', 3001)], 'body', 'The body field must not be greater than 3000 characters.'],
 ]);
 

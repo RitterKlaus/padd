@@ -24,15 +24,16 @@ class PaddController extends Controller
     public function show(User $user, LcarsRenderer $renderer): Response
     {
         $handout = $user->activeHandout();
+        $theme = $handout->theme ?? $user->latestTheme();
 
         try {
             $html = $renderer->render(
-                $handout?->theme() ?? LcarsTheme::Classic,
+                $theme,
                 $handout->title ?? 'PADD',
                 view('padd.content', ['handout' => $handout])->render(),
                 view('padd.poll', [
                     'versionUrl' => route('padd.version', $user->padd_token, absolute: false),
-                    'version' => $this->versionOf($handout),
+                    'version' => $this->versionOf($handout, $theme),
                 ])->render(),
             );
         } catch (LcarsTemplateException $exception) {
@@ -49,8 +50,11 @@ class PaddController extends Controller
      */
     public function version(User $user): JsonResponse
     {
+        $handout = $user->activeHandout();
+        $theme = $handout->theme ?? $user->latestTheme();
+
         return response()->json(
-            ['version' => $this->versionOf($user->activeHandout())],
+            ['version' => $this->versionOf($handout, $theme)],
             headers: self::HEADERS,
         );
     }
@@ -58,10 +62,8 @@ class PaddController extends Controller
     /**
      * Calculate a hash that changes whenever the displayed content changes.
      */
-    private function versionOf(?Handout $handout): string
+    private function versionOf(?Handout $handout, LcarsTheme $theme): string
     {
-        return hash('sha256', serialize($handout === null
-            ? null
-            : [$handout->id, $handout->theme()->value, $handout->title, $handout->body]));
+        return hash('sha256', serialize([$theme->value, $handout?->id, $handout?->title, $handout?->body]));
     }
 }

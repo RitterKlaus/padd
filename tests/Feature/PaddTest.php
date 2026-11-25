@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\LcarsTheme;
 use App\Models\Handout;
 use App\Models\User;
 use Illuminate\Support\Facades\File;
@@ -103,13 +104,15 @@ test('the version changes whenever the displayed content changes', function () {
     $versions[] = $version();
     $handout->update(['body' => 'New text']);
     $versions[] = $version();
+    $handout->update(['theme' => LcarsTheme::Voyager]);
+    $versions[] = $version();
     $other->activate();
     $versions[] = $version();
 
-    expect(array_unique($versions))->toHaveCount(4)
-        ->and($version())->toBe($versions[3]);
+    expect(array_unique($versions))->toHaveCount(5)
+        ->and($version())->toBe($versions[4]);
 
-    $this->get(route('padd.show', $handout->user->padd_token))->assertSee($versions[3]);
+    $this->get(route('padd.show', $handout->user->padd_token))->assertSee($versions[4]);
 });
 
 test('the dashboard links to the PADD without exposing the token in the user data', function () {
@@ -123,4 +126,24 @@ test('the dashboard links to the PADD without exposing the token in the user dat
         ->assertInertia(fn (Assert $page) => $page
             ->where('paddUrl', route('padd.show', $user->padd_token))
             ->missing('auth.user.padd_token'));
+});
+
+test('each handout is shown in its design', function (LcarsTheme $theme) {
+    File::put($this->publicPath.'/LCARS/'.$theme->fileName(), "<html><head><title>x</title></head><body>Design {$theme->value}.<main></main></body></html>");
+    $handout = Handout::factory()->create(['theme' => $theme, 'is_active' => true]);
+
+    $this->get(route('padd.show', $handout->user->padd_token))
+        ->assertOk()
+        ->assertSee("Design {$theme->value}.")
+        ->assertSee($handout->title);
+})->with(LcarsTheme::cases());
+
+test('standby uses the design of the handout created last', function () {
+    File::put($this->publicPath.'/LCARS/voyager.html', '<html><head><title>x</title></head><body>Design voyager<main></main></body></html>');
+    $handout = Handout::factory()->create(['theme' => LcarsTheme::Voyager]);
+
+    $this->get(route('padd.show', $handout->user->padd_token))
+        ->assertOk()
+        ->assertSee('Design voyager')
+        ->assertSee('Standby');
 });

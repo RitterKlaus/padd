@@ -4,7 +4,7 @@ import HandoutFields from '@/components/HandoutFields.vue';
 import Heading from '@/components/Heading.vue';
 import { Button } from '@/components/ui/button';
 import { edit, index, update } from '@/routes/handouts';
-import type { Handout } from '@/types';
+import type { Handout, ThemeOption } from '@/types';
 
 defineOptions({
     layout: (props: { handout: Handout }) => ({
@@ -16,7 +16,8 @@ defineOptions({
 });
 
 defineProps<{
-    handout: Pick<Handout, 'id' | 'title' | 'body'>;
+    handout: Pick<Handout, 'id' | 'title' | 'body' | 'theme'>;
+    themes: ThemeOption[];
 }>();
 </script>
 
@@ -26,7 +27,7 @@ defineProps<{
     <div class="px-4 py-6">
         <Heading
             title="Edit handout"
-            description="Change the title and text of this handout"
+            description="Change the title, design and text of this handout"
         />
 
         <Form
@@ -34,7 +35,12 @@ defineProps<{
             class="max-w-2xl space-y-6"
             v-slot="{ errors, processing }"
         >
-            <HandoutFields :handout="handout" :errors="errors" />
+            <HandoutFields
+                :handout="handout"
+                :theme="handout.theme"
+                :themes="themes"
+                :errors="errors"
+            />
 
             <div class="flex items-center gap-4">
                 <Button type="submit" :disabled="processing">Save</Button>

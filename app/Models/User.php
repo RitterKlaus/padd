@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\LcarsTheme;
 use Database\Factories\UserFactory;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
@@ -55,6 +56,14 @@ class User extends Authenticatable implements MustVerifyEmail
     public function activeHandout(): ?Handout
     {
         return $this->handouts()->where('is_active', true)->first();
+    }
+
+    /**
+     * Get the theme of the handout created last.
+     */
+    public function latestTheme(): LcarsTheme
+    {
+        return $this->handouts()->latest('id')->first()->theme ?? LcarsTheme::Classic;
     }
 
     /**

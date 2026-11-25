@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\LcarsTheme;
 use App\Http\Requests\HandoutRequest;
 use App\Models\Handout;
 use Illuminate\Http\RedirectResponse;
@@ -25,9 +26,12 @@ class HandoutController extends Controller
     /**
      * Show the form for creating a handout.
      */
-    public function create(): Response
+    public function create(Request $request): Response
     {
-        return Inertia::render('handouts/Create');
+        return Inertia::render('handouts/Create', [
+            'defaultTheme' => $request->user()->latestTheme(),
+            'themes' => LcarsTheme::options(),
+        ]);
     }
 
     /**
@@ -50,7 +54,8 @@ class HandoutController extends Controller
         Gate::authorize('update', $handout);
 
         return Inertia::render('handouts/Edit', [
-            'handout' => $handout->only(['id', 'title', 'body']),
+            'handout' => $handout->only(['id', 'title', 'body', 'theme']),
+            'themes' => LcarsTheme::options(),
         ]);
     }
 

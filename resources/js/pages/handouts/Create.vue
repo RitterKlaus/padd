@@ -4,6 +4,7 @@ import HandoutFields from '@/components/HandoutFields.vue';
 import Heading from '@/components/Heading.vue';
 import { Button } from '@/components/ui/button';
 import { create, index, store } from '@/routes/handouts';
+import type { ThemeOption } from '@/types';
 
 defineOptions({
     layout: {
@@ -13,6 +14,11 @@ defineOptions({
         ],
     },
 });
+
+defineProps<{
+    defaultTheme: string;
+    themes: ThemeOption[];
+}>();
 </script>
 
 <template>
@@ -26,7 +32,11 @@ defineOptions({
             class="max-w-2xl space-y-6"
             v-slot="{ errors, processing }"
         >
-            <HandoutFields :errors="errors" />
+            <HandoutFields
+                :theme="defaultTheme"
+                :themes="themes"
+                :errors="errors"
+            />
 
             <div class="flex items-center gap-4">
                 <Button type="submit" :disabled="processing">Save</Button>

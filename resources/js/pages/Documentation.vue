@@ -103,6 +103,10 @@ const sections = [
                         Enter a title (up to 300 characters) and a text (up to
                         3000 characters). Both are required.
                     </li>
+                    <li>
+                        Choose the design for the PADD. The design of the
+                        handout you created last is preselected.
+                    </li>
                     <li>Select "Save".</li>
                 </ol>
                 <h3>Edit a handout</h3>
