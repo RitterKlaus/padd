@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AdministrationController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\HandoutController;
 use App\Models\Setting;
 use Illuminate\Support\Facades\Route;
@@ -11,7 +12,7 @@ Route::get('/', fn () => Inertia::render('Welcome', [
 ]))->name('home');
 
 Route::middleware(['auth', 'verified'])->group(function () {
-    Route::inertia('dashboard', 'Dashboard')->name('dashboard');
+    Route::get('dashboard', DashboardController::class)->name('dashboard');
     Route::inertia('documentation', 'Documentation')->name('documentation');
 
     Route::resource('handouts', HandoutController::class)->except('show');
